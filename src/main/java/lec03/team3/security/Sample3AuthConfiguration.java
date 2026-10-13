@@ -14,6 +14,19 @@ import org.springframework.security.web.SecurityFilterChain;
 public class Sample3AuthConfiguration {
 
   @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http.formLogin(login -> login
+        .permitAll())
+        .logout(logout -> logout
+            .logoutUrl("/logout")
+            .logoutSuccessUrl("/")) // ログアウト後に / にリダイレクト
+        .authorizeHttpRequests(authz -> authz
+            .requestMatchers("/sample3/**").authenticated() // /sample3/以下は認証済みであること
+            .anyRequest().permitAll()); // 上記以外は全員アクセス可能
+    return http.build();
+  }
+
+  @Bean
   public InMemoryUserDetailsManager userDetailsService() {
 
     UserDetails user1 = User.withUsername("user1")
